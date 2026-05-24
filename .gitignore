@@ -1,0 +1,18 @@
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Local virtual environments
+env/
+venv/
+.env/
+
+# OS temporary files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker local data directories (if any)
+cyberai-homelab/zeek/logs/*
+cyberai-homelab/suricata/*.log
+cyberai-homelab/suricata/*.json

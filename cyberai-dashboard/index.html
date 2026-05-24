@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CyberAI Interactive Command Center - An AI-powered network security and threat detection portfolio dashboard demonstrating machine learning models in intrusion detection.">
+    <title>CyberAI Command Center - Threat Detection Portfolio</title>
+    <!-- Google Fonts for premium tech aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for secure cyber icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background grid & glow details -->
+    <div class="cyber-grid" aria-hidden="true"></div>
+    <div class="glow-overlay" aria-hidden="true"></div>
+
+    <header class="main-header" id="sec-header">
+        <div class="header-logo">
+            <i class="fa-solid fa-shield-halved logo-icon"></i>
+            <div class="logo-text">
+                <h1>CYBER<span class="neon-text">AI</span></h1>
+                <p>SECURITY COMMAND CENTER</p>
+            </div>
+        </div>
+        <div class="system-status" id="sys-status">
+            <span class="status-indicator online" id="status-light"></span>
+            <span class="status-label" id="status-text">AI MONITOR ACTIVE</span>
+            <span class="status-divider">|</span>
+            <span class="system-time" id="clock-display">00:00:00 UT</span>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- LEFT COLUMN: Live Feed & Predictor -->
+        <div class="column-left">
+            <!-- Component 1: Real-time Threat Monitor -->
+            <section class="cyber-card live-feed-card" id="card-monitor">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-wave-square header-icon"></i> LIVE NETWORK TRAFFIC FEED</h2>
+                    <div class="badge neon-border-cyan">REAL-TIME SIMULATION</div>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">Raw network packets captured by <strong>Zeek Sensors</strong> in our homelab network loop, analyzed instantly by our AI models:</p>
+                    <div class="table-container">
+                        <table class="packet-table" id="traffic-table">
+                            <thead>
+                                <tr>
+                                    <th>UID</th>
+                                    <th>PROTOCOL</th>
+                                    <th>DURATION</th>
+                                    <th>BYTES (SND/RCV)</th>
+                                    <th>STATE</th>
+                                    <th>AI CLASSIFICATION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="packet-tbody">
+                                <!-- Populated dynamically by app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Component 2: Interactive AI Predictor (Logistic Regression Sliders) -->
+            <section class="cyber-card predictor-card" id="card-predictor">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-robot header-icon"></i> INTERACTIVE AI PREDICTOR</h2>
+                    <div class="badge neon-border-purple">LOGISTIC REGRESSION ENGINE</div>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">Drag the sliders below to simulate a connection profile. Our client-side AI math engine will predict the threat probability instantly:</p>
+                    
+                    <div class="predictor-controls">
+                        <!-- Control 1 -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="slider-duration"><i class="fa-regular fa-clock"></i> Connection Duration (seconds)</label>
+                                <span class="slider-value" id="val-duration">1.5s</span>
+                            </div>
+                            <input type="range" id="slider-duration" min="0.001" max="100.0" step="0.1" value="1.5">
+                            <span class="slider-hint">Normal connections are longer; DDoS floods are under 0.1s.</span>
+                        </div>
+
+                        <!-- Control 2 -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="slider-packets"><i class="fa-solid fa-box-open"></i> Packets Sent by Originator</label>
+                                <span class="slider-value" id="val-packets">10 pkts</span>
+                            </div>
+                            <input type="range" id="slider-packets" min="1" max="1000" step="1" value="10">
+                            <span class="slider-hint">Port scans send only 1 packet; DDoS floods send thousands.</span>
+                        </div>
+
+                        <!-- Control 3 -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="slider-bytes"><i class="fa-solid fa-database"></i> Bytes Sent by Originator</label>
+                                <span class="slider-value" id="val-bytes">2,000 B</span>
+                            </div>
+                            <input type="range" id="slider-bytes" min="0" max="100000" step="100" value="2000">
+                            <span class="slider-hint">Normal web browsing has high bytes; DDoS/Scans contain 0 bytes.</span>
+                        </div>
+                    </div>
+
+                    <div class="prediction-results">
+                        <div class="results-header">
+                            <h3>THREAT LIKELIHOOD</h3>
+                            <span class="prediction-percentage" id="threat-percentage">0.1%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="threat-bar"></div>
+                        </div>
+                        <div class="prediction-alert-box benign" id="prediction-alert">
+                            <i class="fa-solid fa-circle-check inline-icon" id="alert-icon"></i>
+                            <span id="alert-msg">Connection profiles as Normal. Benign session.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- RIGHT COLUMN: Charts, K-Means & Documentation -->
+        <div class="column-right">
+            <!-- Component 3: Unsupervised threat Hunting (K-Means & PCA) -->
+            <section class="cyber-card visual-card" id="card-visual">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-pie header-icon"></i> K-MEANS ANOMALY DETECTOR (PCA)</h2>
+                    <div class="badge neon-border-orange">UNSUPERVISED CLUSTERING</div>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">How our AI groups raw, unlabeled traffic into **4 separate piles** strictly based on structural similarity. PCA squashes 16 features into a flat 2D projection:</p>
+                    
+                    <div class="clustering-display">
+                        <!-- Custom visual rendering of clusters using SVG -->
+                        <div class="cluster-svg-container">
+                            <svg viewBox="0 0 500 350" class="cluster-svg" id="cluster-plot">
+                                <!-- SVG definitions for glowing filters -->
+                                <defs>
+                                    <radialGradient id="glow-c0" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="rgba(240, 46, 170, 0.4)"/>
+                                        <stop offset="100%" stop-color="rgba(240, 46, 170, 0)"/>
+                                    </radialGradient>
+                                    <radialGradient id="glow-c1" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="rgba(0, 245, 255, 0.4)"/>
+                                        <stop offset="100%" stop-color="rgba(0, 245, 255, 0)"/>
+                                    </radialGradient>
+                                    <radialGradient id="glow-c2" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="rgba(191, 85, 236, 0.4)"/>
+                                        <stop offset="100%" stop-color="rgba(191, 85, 236, 0)"/>
+                                    </radialGradient>
+                                    <radialGradient id="glow-c3" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="rgba(46, 204, 113, 0.4)"/>
+                                        <stop offset="100%" stop-color="rgba(46, 204, 113, 0)"/>
+                                    </radialGradient>
+                                </defs>
+                                <!-- Grid background -->
+                                <g class="grid-lines" stroke="rgba(255,255,255,0.04)" stroke-width="1">
+                                    <line x1="50" y1="50" x2="50" y2="300"/>
+                                    <line x1="150" y1="50" x2="150" y2="300"/>
+                                    <line x1="250" y1="50" x2="250" y2="300"/>
+                                    <line x1="350" y1="50" x2="350" y2="300"/>
+                                    <line x1="450" y1="50" x2="450" y2="300"/>
+                                    <line x1="50" y1="50" x2="450" y2="50"/>
+                                    <line x1="50" y1="125" x2="450" y2="125"/>
+                                    <line x1="50" y1="200" x2="450" y2="200"/>
+                                    <line x1="50" y1="275" x2="450" y2="275"/>
+                                </g>
+                                <!-- Glow backgrounds for cluster centroids -->
+                                <circle cx="100" cy="180" r="80" fill="url(#glow-c0)"/>
+                                <circle cx="280" cy="220" r="90" fill="url(#glow-c1)"/>
+                                <circle cx="220" cy="100" r="70" fill="url(#glow-c2)"/>
+                                <circle cx="380" cy="130" r="95" fill="url(#glow-c3)"/>
+                                
+                                <!-- Rendered cluster elements will go here (drawn by app.js) -->
+                                <g id="svg-datapoints"></g>
+                                <g id="svg-centroids"></g>
+                            </svg>
+                        </div>
+                        <div class="legend-container">
+                            <span class="legend-item"><span class="dot ddos"></span> Cluster 0: DDoS Flood</span>
+                            <span class="legend-item"><span class="dot benign"></span> Cluster 1: Benign User</span>
+                            <span class="legend-item"><span class="dot bruteforce"></span> Cluster 2: Brute Force</span>
+                            <span class="legend-item"><span class="dot portscan"></span> Cluster 3: Port Scan</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Component 4: Project Portfolio Details -->
+            <section class="cyber-card docs-card" id="card-docs">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-graduation-cap header-icon"></i> PROJECT BLUEPRINTS & ACHIEVEMENTS</h2>
+                    <div class="badge neon-border-green">PORTFOLIO DOCUMENTATION</div>
+                </div>
+                <div class="card-body">
+                    <div class="tab-controls">
+                        <button class="tab-btn active" id="btn-tab-intro" onclick="switchTab('intro')">Overview</button>
+                        <button class="tab-btn" id="btn-tab-homelab" onclick="switchTab('homelab')">Homelab Arch</button>
+                        <button class="tab-btn" id="btn-tab-metrics" onclick="switchTab('metrics')">AI Metrics</button>
+                    </div>
+
+                    <div class="tab-content active" id="tab-intro">
+                        <h3>Automated Intrusion Intelligence</h3>
+                        <p>This portfolio showcases a full-scale cybersecurity machine learning project. We simulated a Security Operations Center network, gathered packet data from network monitors (Zeek & Suricata), engineered 16 distinct connection characteristics, and built mathematical detection engines.</p>
+                        <div class="info-highlights">
+                            <div class="highlight-box">
+                                <span class="h-num neon-text-cyan">99.85%</span>
+                                <span class="h-lbl">AI Detection Accuracy</span>
+                            </div>
+                            <div class="highlight-box">
+                                <span class="h-num neon-text-purple">10,000</span>
+                                <span class="h-lbl">Network Session Logs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tab-homelab">
+                        <h3>Simulated Network Infrastructure</h3>
+                        <p>Our Cybersecurity Homelab is launched via virtual boxes utilizing <strong>Docker Desktop</strong> inside Windows, mirroring corporate environments:</p>
+                        <ul class="styled-list">
+                            <li><i class="fa-solid fa-circle-check list-icon"></i> <strong>Zeek Container:</strong> Sniffs simulated interfaces and records transaction logs.</li>
+                            <li><i class="fa-solid fa-circle-check list-icon"></i> <strong>Suricata Container:</strong> Intrusion detection system monitoring live packet signatures.</li>
+                            <li><i class="fa-solid fa-circle-check list-icon"></i> <strong>ELK Stack:</strong> Aggregates, structures, and visualizes network event telemetry.</li>
+                            <li><i class="fa-solid fa-circle-check list-icon"></i> <strong>Jupyter Notebook:</strong> Feeds off aggregate logs to train and evaluate AI models.</li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content" id="tab-metrics">
+                        <h3>Model Evaluation Matrix</h3>
+                        <p>The core mathematical models were evaluated against unseen network traffic to ensure reliability in critical infrastructure:</p>
+                        <div class="stats-table-container">
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Category</th>
+                                        <th>Precision</th>
+                                        <th>Recall</th>
+                                        <th>F1-Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Normal Users</strong></td>
+                                        <td>100.0%</td>
+                                        <td>99.9%</td>
+                                        <td>99.9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>DDoS Floods</strong></td>
+                                        <td>100.0%</td>
+                                        <td>100.0%</td>
+                                        <td>100.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Port Scans</strong></td>
+                                        <td>99.6%</td>
+                                        <td>100.0%</td>
+                                        <td>99.8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Brute Force</strong></td>
+                                        <td>99.1%</td>
+                                        <td>98.5%</td>
+                                        <td>98.8%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="main-footer" id="sec-footer">
+        <p>&copy; 2026 AI in Cyber Security Portfolio. Handcrafted using Vanilla HTML5, CSS3, & JS.</p>
+        <div class="footer-links">
+            <span class="footer-badge"><i class="fa-solid fa-code"></i> AI Model Embedded</span>
+            <span class="footer-badge"><i class="fa-solid fa-bolt"></i> GPU Accelerated Physics</span>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

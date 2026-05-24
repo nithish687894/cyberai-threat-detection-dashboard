@@ -1,0 +1,77 @@
+version: '3.7'
+
+services:
+  zeek:
+    image: zeek/zeek
+    container_name: zeek
+    networks:
+      - cyberai-net
+    volumes:
+      - ./zeek:/opt/zeek/logs
+    ports:
+      - "47760:47760"
+    restart: unless-stopped
+
+  suricata:
+    image: jasonish/suricata
+    container_name: suricata
+    networks:
+      - cyberai-net
+    volumes:
+      - ./suricata:/var/log/suricata
+    ports:
+      - "3050:3050"
+      - "8887:8888" # FIXED: Changed host port from 8888 to 8887 to prevent port conflict with Jupyter Notebook!
+    restart: unless-stopped
+
+  elk:
+    image: sebp/elk
+    container_name: elk
+    networks:
+      - cyberai-net
+    ports:
+      - "5601:5601" # Kibana
+      - "9200:9200" # Elasticsearch
+      - "5044:5044" # Logstash Beats input
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./elk/config:/etc/logstash
+      - elk-data:/var/lib/elasticsearch # FIXED: Used a named Docker volume instead of a local directory to prevent file permission crashes on Windows
+    restart: unless-stopped
+
+  # NOTE ON MISP:
+  # The course-provided image `harvardnlp/misp` has been deprecated and deleted from Docker Hub, 
+  # which makes pulling it fail with an "access denied" error.
+  # Since the MISP section in your course module is strictly CONCEPTUAL (no coding files use it in this module),
+  # we have commented it out here. This saves you 2-3 GB of RAM and ensures your lab boots up instantly without errors!
+  #
+  # misp:
+  #   image: harvardnlp/misp
+  #   container_name: misp
+  #   networks:
+  #     - cyberai-net
+  #   ports:
+  #     - "8081:80"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #   restart: unless-stopped
+
+  jupyter:
+    image: jupyter/scipy-notebook
+    container_name: jupyter-notebook
+    networks:
+      - cyberai-net
+    ports:
+      - "8888:8888" # Jupyter Notebook standard port
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    restart: unless-stopped
+
+networks:
+  cyberai-net:
+    driver: bridge
+
+# Defined named volumes to handle database storage reliably
+volumes:
+  elk-data:
